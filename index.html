@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet"
+        href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="styles.css">
+    <title>Tomgert Creator</title>
+</head>
+
+<body>
+    <div id="upload">
+        <input type="file" id="actual-btn" hidden />
+        <label for="actual-btn">Bild auswählen</label>
+    </div>
+    <div id="preview" style="display: none;">
+        <div class="container" id="container">
+            <!-- <img src="./assets/hut.png" alt="Hut" class="hut"> -->
+            <img id="img" src="" alt="Bildvorschau">
+        </div>
+        <div class="actions">
+            <div>
+                <input type="range" id="trans-x" min="0" max="100" value="0" />
+                <input type="range" id="trans-y" min="0" max="100" value="0" />
+            </div>
+            <button id="download">
+                <span class="material-symbols-outlined">
+                    download
+                </span>
+            </button>
+        </div>
+    </div>
+
+    <script src="./html2canvas.js"></script>
+    <script>
+        // Buttons
+        const upload_btn = document.getElementById("actual-btn");
+        const download_btn = document.getElementById("download");
+        const mirror_btn = document.getElementById("mirror");
+        const trans_x_slider = document.getElementById("trans-x");
+        const trans_y_slider = document.getElementById("trans-y");
+
+        // Image
+        const img_preview = document.getElementById("img");
+
+        // Containers
+        const preview = document.getElementById("preview");
+        const upload = document.getElementById("upload");
+        const container = document.getElementById("container");
+
+        upload_btn.addEventListener("change", function () {
+            const file = this.files[0];
+
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = function () {
+                const base64 = reader.result;
+                img_preview.src = base64;
+                preview.style.display = "block";
+                upload.style.display = "none";
+                console.log(base64);
+            };
+            reader.onerror = function (error) {
+                console.log("Error: ", error);
+            };
+        });
+
+        let anzahlHüte = 0;
+        let selectedHut = null;
+
+        function createHut(e) {
+            const hut_container = document.createElement("div");
+            hut_container.classList.add("hut");
+            const hut = document.createElement("img");
+            hut.src = "./assets/hut.png";
+
+            const x = e.clientX - container.offsetLeft - 50;
+            const y = e.clientY - container.offsetTop - 50;
+
+            hut_container.style.left = x + "px";
+            hut_container.style.top = y + "px";
+
+            let isMouseDown = false;
+            let mouseStartX = 0;
+            let mouseStartY = 0;
+            let hutStartX = 0;
+            let hutStartY = 0;
+
+            const hutId = anzahlHüte;
+            anzahlHüte++;
+
+            hut_container.addEventListener("mousedown", function () {
+                if (!event.target.classList.contains("resize")) {
+                    isMouseDown = true;
+                    mouseStartX = event.clientX;
+                    mouseStartY = event.clientY;
+                    hutStartX = hut_container.offsetLeft;
+                    hutStartY = hut_container.offsetTop;
+                } else {
+                    const hutWidth = hut_container.offsetWidth;
+                    const hutHeight = hut_container.offsetHeight;
+
+                    const mouseStartX = event.clientX;
+                    const mouseStartY = event.clientY;
+                    let resizing = true;
+
+                    document.addEventListener("mousemove", function (event) {
+                        const mouseMoveX = event.clientX - mouseStartX;
+                        const mouseMoveY = event.clientY - mouseStartY;
+
+                        if (resizing)
+                            hut_container.style.width = hutWidth + mouseMoveX + "px";
+                    });
+
+                    document.addEventListener("mouseup", function () {
+                        resizing = false;
+                    });
+                }
+            });
+
+            document.addEventListener("mouseup", function () {
+                isMouseDown = false;
+            });
+
+            document.addEventListener("mousemove", function (event) {
+                if (isMouseDown) {
+                    const mouseMoveX = event.clientX - mouseStartX;
+                    const mouseMoveY = event.clientY - mouseStartY;
+
+                    hut_container.style.left = hutStartX + mouseMoveX + "px";
+                    hut_container.style.top = hutStartY + mouseMoveY + "px";
+                }
+            });
+
+            hut_container.addEventListener("click", function () {
+                if (selectedHut !== null) {
+                    selectedHut.classList.remove("selected");
+                }
+                selectedHut = hut_container;
+                selectedHut.classList.add("selected");
+            });
+
+            hut_container.addEventListener("dblclick", function () {
+                container.removeChild(hut_container);
+            });
+
+            const resize = document.createElement("div");
+            resize.classList.add("resize");
+
+            hut_container.appendChild(resize);
+            hut_container.appendChild(hut);
+            container.appendChild(hut_container);
+        }
+
+        img_preview.addEventListener("dblclick", createHut);
+        img_preview.addEventListener("click", function () {
+            if (selectedHut !== null) {
+                selectedHut.classList.remove("selected");
+                selectedHut = null;
+            }
+        });
+
+        download_btn.addEventListener("click", function () {
+            container.style.borderRadius = "0";
+            const huts = document.querySelectorAll(".hut");
+            huts.forEach(hut => {
+                hut.classList.remove("selected");
+            });
+            html2canvas(container).then(function (canvas) {
+                const img = canvas.toDataURL("image/png");
+                const a = document.createElement("a");
+                a.href = img;
+                a.download = "image.png";
+                a.click();
+
+                container.style.borderRadius = null;
+            });
+        });
+
+    </script>
+</body>
+
+</html>
