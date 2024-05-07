@@ -117,7 +117,7 @@
 				const hutId = anzahlHüte
 				anzahlHüte++
 
-				hut_container.addEventListener('mousedown', function () {
+				function mousedown() {
 					if (!event.target.classList.contains('resize') && !event.target.classList.contains('rotate')) {
 						isMouseDown = true
 						mouseStartX = event.clientX
@@ -168,13 +168,18 @@
 							rotating = false
 						})
 					}
-				})
+				}
+				hut_container.addEventListener('mousedown', mousedown)
+				hut_container.addEventListener('touchstart', mousedown)
 
-				document.addEventListener('mouseup', function () {
+				function mouseup() {
 					isMouseDown = false
-				})
+				}
 
-				document.addEventListener('mousemove', function (event) {
+				document.addEventListener('mouseup', mouseup)
+				document.addEventListener('touchend', mouseup)
+
+				function mousemove(event) {
 					if (isMouseDown) {
 						const mouseMoveX = event.clientX - mouseStartX
 						const mouseMoveY = event.clientY - mouseStartY
@@ -182,7 +187,10 @@
 						hut_container.style.left = hutStartX + mouseMoveX + 'px'
 						hut_container.style.top = hutStartY + mouseMoveY + 'px'
 					}
-				})
+				}
+
+				document.addEventListener('mousemove', mousemove)
+				document.addEventListener('touchmove', mousemove)
 
 				hut_container.addEventListener('click', function () {
 					if (selectedHut !== null) {
