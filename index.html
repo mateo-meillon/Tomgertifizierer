@@ -189,8 +189,18 @@
 					}
 				}
 
+				function mobilemove(event) {
+					if (isMouseDown) {
+						const mouseMoveX = event.touches[0].clientX - mouseStartX
+						const mouseMoveY = event.touches[0].clientY - mouseStartY
+
+						hut_container.style.left = hutStartX + mouseMoveX + 'px'
+						hut_container.style.top = hutStartY + mouseMoveY + 'px'
+					}
+				}
+
 				document.addEventListener('mousemove', mousemove)
-				document.addEventListener('touchmove', mousemove)
+				document.addEventListener('touchmove', mobilemove)
 
 				hut_container.addEventListener('click', function () {
 					if (selectedHut !== null) {
