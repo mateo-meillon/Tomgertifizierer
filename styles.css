@@ -31,7 +31,6 @@ label:hover {
 
 #img {
   max-width: calc(100vw - 80px);
-  width: 100%;
   max-height: calc(100vh - 80px);
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
   margin-bottom: -6px;
