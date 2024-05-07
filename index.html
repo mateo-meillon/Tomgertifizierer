@@ -56,15 +56,13 @@
 			trans_x_slider.addEventListener('input', function () {
 				const value = this.value
 				const hut = selectedHut.querySelector('img')
-				hut.style.transform = `rotateY(${value}deg)`
-				hutectedHut.style.transform += `rotateX(${trans_y_slider.value}deg)`
+				hut.style.transform = `rotateY(${value}deg) rotateX(${trans_y_slider.value}deg)`
 			})
 
 			trans_y_slider.addEventListener('input', function () {
 				const value = this.value
 				const hut = selectedHut.querySelector('img')
-				hut.style.transform = `rotateX(${value}deg)`
-				hut.style.transform += `rotateY(${trans_x_slider.value}deg)`
+				hut.style.transform = `rotateX(${value}deg) rotateY(${trans_x_slider.value}deg)`
 			})
 
 			disableSlider()
