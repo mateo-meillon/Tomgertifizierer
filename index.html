@@ -118,13 +118,13 @@
 				anzahlHüte++
 
 				hut_container.addEventListener('mousedown', function () {
-					if (!event.target.classList.contains('resize')) {
+					if (!event.target.classList.contains('resize') && !event.target.classList.contains('rotate')) {
 						isMouseDown = true
 						mouseStartX = event.clientX
 						mouseStartY = event.clientY
 						hutStartX = hut_container.offsetLeft
 						hutStartY = hut_container.offsetTop
-					} else {
+					} else if (event.target.classList.contains('resize')) {
 						const hutWidth = hut_container.offsetWidth
 						const hutHeight = hut_container.offsetHeight
 
@@ -141,6 +141,31 @@
 
 						document.addEventListener('mouseup', function () {
 							resizing = false
+						})
+					} else if (event.target.classList.contains('rotate')) {
+						// Take the current position of the mouse in relation to the center of the hut and calculate the angle
+						const hutCenterX = hut_container.offsetLeft + hut_container.offsetWidth / 2
+						const hutCenterY = hut_container.offsetTop + hut_container.offsetHeight / 2
+
+						const mouseCenterX = event.clientX
+						const mouseCenterY = event.clientY
+
+						const angle = Math.atan2(mouseCenterY - hutCenterY, mouseCenterX - hutCenterX) * (180 / Math.PI)
+
+						selectedHut.style.transform = `rotate(${angle}deg)`
+						let rotating = true
+
+						document.addEventListener('mousemove', function (event) {
+							const mouseCenterX = event.clientX
+							const mouseCenterY = event.clientY
+
+							const angle = Math.atan2(mouseCenterY - hutCenterY, mouseCenterX - hutCenterX) * (180 / Math.PI)
+
+							if (rotating) selectedHut.style.transform = `rotate(${angle}deg)`
+						})
+
+						document.addEventListener('mouseup', function () {
+							rotating = false
 						})
 					}
 				})
@@ -174,6 +199,10 @@
 				const resize = document.createElement('div')
 				resize.classList.add('resize')
 
+				const rotate = document.createElement('div')
+				rotate.classList.add('rotate')
+
+				hut_container.appendChild(rotate)
 				hut_container.appendChild(resize)
 				hut_container.appendChild(hut)
 				container.appendChild(hut_container)
